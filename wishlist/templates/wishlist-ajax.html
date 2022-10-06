@@ -1,0 +1,117 @@
+{% extends 'base.html' %}
+
+
+{% block content %}
+<nav class="navbar navbar-expand-lg bg-light">
+  <div class="container-fluid">
+    <a class="navbar-brand" href="#">Wishlist</a>
+    <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+      <span class="navbar-toggler-icon"></span>
+    </button>
+    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+      <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+        <li class="nav-item">
+          <a class="nav-link" >Achieva Futura Gemilang</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link active" href="{% url 'wishlist:logout' %}">Logout</a>
+        </li>
+      </ul>
+    </div>
+  </div>
+</nav>
+<br>
+<h5>NPM: 2106750452</h5>
+<h5>Sesi terakhir login: {{last_login}}</h5>
+<br></br>
+    <h4 style = "padding:8px;"> Nama Barang     |   Harga Barang    |     Deskripsi</h4>
+
+  <div style="padding:2px">
+  </div>
+  <div id = "div" style="padding:8px"> </div>
+
+<br>
+<br>
+<h5>Masukkan Wishlist</h5>
+<form id = "idForm" method="POST" action="/wishlist/ajax/submit/">
+  {% csrf_token %}
+  <div class = "p-8">
+    <div class = "my-4">
+      <p>Nama Barang: </p>
+                <input type="text" name="nama_barang" placeholder="Nama Barang" class="form-control">   
+              </div>
+
+              <div class = "my-4">
+                <p>Harga Barang: </p>
+                <input type="number" name="harga_barang" placeholder="Harga Barang" class="form-control">
+              </div>
+
+              <div class = "my-4">
+                <p>Deskripsi: </p>
+                <input type="description" name="deskripsi" placeholder="Deskripsi" class="form-control">
+              </div>
+              
+              <div class = "text-center">
+                <button class="btn btn-primary w-full" type="submit" id = "idForm"> Create Wishlist </button>
+              </div>
+            </div>
+          </form>
+          
+          <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+          <script>
+            function showData(){
+              $.get("/wishlist/json/", function(data)                {   
+                $.each(data, function(i,data){
+                  var th_nama_barang =
+                  `<th style = "padding:8px;"> ${data.fields.nama_barang} </th>`;
+                  $(th_nama_barang).appendTo("#tr");
+                        
+                        var th_harga_barang =
+                        `<th style = "padding:8px;"> ${data.fields.harga_barang} </th>`;
+                        
+                        var th_deskripsi_barang =
+                        `<th style = "padding:8px;"> ${data.fields.deskripsi} </th>`;
+                        
+                        var total = `<tr> ${th_nama_barang} ${th_harga_barang} ${th_deskripsi_barang} </tr>`
+
+                        $(total).appendTo("#div");
+                    });
+                });
+                return false;
+        }
+            $(document).ready(function(){
+                showData()
+            });
+
+
+        $("#idForm").submit(function(event) {
+            event.preventDefault();
+            var form = $(this);
+            var actionUrl = form.attr('action');
+
+            $.ajax({
+                type: "POST",
+                url: actionUrl,
+                data: form.serialize(),
+                success: function(data){
+                  console.log(data)
+                  var th_nama_barang =
+                  `<th style = "padding:8px;"> ${data.data.nama_barang} </th>`;
+                        $(th_nama_barang).appendTo("#tr");
+
+                        var th_harga_barang =
+                        `<th style = "padding:8px;"> ${data.data.harga_barang} </th>`;
+
+                        var th_deskripsi_barang =
+                        `<th style = "padding:8px;"> ${data.data.deskripsi} </th>`;
+                        
+                        var total = `<tr> ${th_nama_barang} ${th_harga_barang} ${th_deskripsi_barang} </tr>`
+
+                        $(total).appendTo("#div");                  
+                }
+            });
+
+        });
+    </script>
+
+{% endblock content %}
